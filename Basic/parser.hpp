@@ -7,14 +7,12 @@
 #ifndef _parser_h
 #define _parser_h
 
-#include <string>
-#include <iostream>
-#include "exp.hpp"
-
-#include "Utils/tokenScanner.hpp"
 #include "Utils/error.hpp"
 #include "Utils/strlib.hpp"
-
+#include "Utils/tokenScanner.hpp"
+#include "exp.hpp"
+#include <iostream>
+#include <string>
 
 /*
  * Function: parseExp

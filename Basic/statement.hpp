@@ -12,15 +12,16 @@
 #ifndef _statement_h
 #define _statement_h
 
-#include <string>
-#include <sstream>
-#include "evalstate.hpp"
-#include "exp.hpp"
-#include "Utils/tokenScanner.hpp"
-#include "program.hpp"
-#include"parser.hpp"
 #include "Utils/error.hpp"
 #include "Utils/strlib.hpp"
+#include "Utils/tokenScanner.hpp"
+#include "evalstate.hpp"
+#include "exp.hpp"
+#include "parser.hpp"
+#include "program.hpp"
+#include <sstream>
+#include <string>
+#include <vector>
 
 class Program;
 
@@ -37,52 +38,93 @@ class Program;
 class Statement {
 
 public:
+  /*
+   * Constructor: Statement
+   * ----------------------
+   * The base class constructor is empty.  Each subclass must provide
+   * its own constructor.
+   */
 
-/*
- * Constructor: Statement
- * ----------------------
- * The base class constructor is empty.  Each subclass must provide
- * its own constructor.
- */
+  Statement();
 
-    Statement();
+  /*
+   * Destructor: ~Statement
+   * Usage: delete stmt;
+   * -------------------
+   * The destructor deallocates the storage for this expression.
+   * It must be declared virtual to ensure that the correct subclass
+   * destructor is called when deleting a statement.
+   */
 
-/*
- * Destructor: ~Statement
- * Usage: delete stmt;
- * -------------------
- * The destructor deallocates the storage for this expression.
- * It must be declared virtual to ensure that the correct subclass
- * destructor is called when deleting a statement.
- */
+  virtual ~Statement();
 
-    virtual ~Statement();
+  /*
+   * Method: execute
+   * Usage: stmt->execute(state);
+   * ----------------------------
+   * This method executes a BASIC statement.  Each of the subclasses
+   * defines its own execute method that implements the necessary
+   * operations.  As was true for the expression evaluator, this
+   * method takes an EvalState object for looking up variables or
+   * controlling the operation of the interpreter.
+   */
 
-/*
- * Method: execute
- * Usage: stmt->execute(state);
- * ----------------------------
- * This method executes a BASIC statement.  Each of the subclasses
- * defines its own execute method that implements the necessary
- * operations.  As was true for the expression evaluator, this
- * method takes an EvalState object for looking up variables or
- * controlling the operation of the interpreter.
- */
-
-    virtual void execute(EvalState &state, Program &program) = 0;
-
+  virtual void execute(EvalState &state, Program &program) = 0;
 };
 
+class REM : public Statement {
+public:
+  virtual void execute(EvalState &state, Program &program);
+};
 
-/*
- * The remainder of this file must consists of subclass
- * definitions for the individual statement forms.  Each of
- * those subclasses must define a constructor that parses a
- * statement from a scanner and a method called execute,
- * which executes that statement.  If the private data for
- * a subclass includes data allocated on the heap (such as
- * an Expression object), the class implementation must also
- * specify its own destructor method to free that memory.
- */
+class LET : public Statement {
+public:
+  std::string var;
+  Expression *exp;
+  virtual void execute(EvalState &state, Program &program);
+  virtual ~LET();
+};
+
+class PRINT : public Statement {
+public:
+  Expression *exp;
+  virtual void execute(EvalState &state, Program &program);
+  virtual ~PRINT();
+};
+
+class INPUT : public Statement {
+public:
+  std::string var;
+  virtual void execute(EvalState &state, Program &program);
+};
+
+class END : public Statement {
+public:
+  virtual void execute(EvalState &state, Program &program);
+};
+
+class GOTO : public Statement {
+public:
+  int line_num;
+  virtual void execute(EvalState &state, Program &program);
+};
+
+class IF : public Statement {
+public:
+  int line_num;
+  Expression *lhs;
+  char op;
+  Expression *rhs;
+  virtual void execute(EvalState &state, Program &program);
+  virtual ~IF();
+};
+
+bool IsVarLegal(const std::string &var);
+
+bool IsNumLegal(const std::string &num);
+
+const std::vector<std::string> KEY_WORDS = {
+    "REM",  "LET", "PRINT", "INPUT", "END",  "GOTO", "IF",
+    "THEN", "RUN", "LIST",  "CLEAR", "QUIT", "HELP"};
 
 #endif

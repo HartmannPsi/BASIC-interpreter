@@ -8,12 +8,11 @@
 #ifndef _program_h
 #define _program_h
 
-#include <string>
-#include <vector>
-#include <set>
-#include <unordered_map>
 #include "statement.hpp"
-
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 class Statement;
 
@@ -33,120 +32,120 @@ class Statement;
 class Program {
 
 public:
+  /*
+   * Constructor: Program
+   * Usage: Program program;
+   * -----------------------
+   * Constructs an empty BASIC program.
+   */
 
-/*
- * Constructor: Program
- * Usage: Program program;
- * -----------------------
- * Constructs an empty BASIC program.
- */
+  Program();
 
-    Program();
+  /*
+   * Destructor: ~Program
+   * Usage: usually implicit
+   * -----------------------
+   * Frees any heap storage associated with the program.
+   */
 
-/*
- * Destructor: ~Program
- * Usage: usually implicit
- * -----------------------
- * Frees any heap storage associated with the program.
- */
+  ~Program();
 
-    ~Program();
+  /*
+   * Method: clear
+   * Usage: program.clear();
+   * -----------------------
+   * Removes all lines from the program.
+   */
 
-/*
- * Method: clear
- * Usage: program.clear();
- * -----------------------
- * Removes all lines from the program.
- */
+  void clear();
 
-    void clear();
+  /*
+   * Method: addSourceLine
+   * Usage: program.addSourceLine(lineNumber, line);
+   * -----------------------------------------------
+   * Adds a source line to the program with the specified line number.
+   * If that line already exists, the text of the line replaces
+   * the text of any existing line and the parsed representation
+   * (if any) is deleted.  If the line is new, it is added to the
+   * program in the correct sequence.
+   */
 
-/*
- * Method: addSourceLine
- * Usage: program.addSourceLine(lineNumber, line);
- * -----------------------------------------------
- * Adds a source line to the program with the specified line number.
- * If that line already exists, the text of the line replaces
- * the text of any existing line and the parsed representation
- * (if any) is deleted.  If the line is new, it is added to the
- * program in the correct sequence.
- */
+  void addSourceLine(int lineNumber, const std::string &line);
 
-    void addSourceLine(int lineNumber, const std::string& line);
+  /*
+   * Method: removeSourceLine
+   * Usage: program.removeSourceLine(lineNumber);
+   * --------------------------------------------
+   * Removes the line with the specified number from the program,
+   * freeing the memory associated with any parsed representation.
+   * If no such line exists, this method simply returns without
+   * performing any action.
+   */
 
-/*
- * Method: removeSourceLine
- * Usage: program.removeSourceLine(lineNumber);
- * --------------------------------------------
- * Removes the line with the specified number from the program,
- * freeing the memory associated with any parsed representation.
- * If no such line exists, this method simply returns without
- * performing any action.
- */
+  void removeSourceLine(int lineNumber);
 
-    void removeSourceLine(int lineNumber);
+  /*
+   * Method: getSourceLine
+   * Usage: string line = program.getSourceLine(lineNumber);
+   * -------------------------------------------------------
+   * Returns the program line with the specified line number.
+   * If no such line exists, this method returns the empty string.
+   */
 
-/*
- * Method: getSourceLine
- * Usage: string line = program.getSourceLine(lineNumber);
- * -------------------------------------------------------
- * Returns the program line with the specified line number.
- * If no such line exists, this method returns the empty string.
- */
+  std::string getSourceLine(int lineNumber);
 
-    std::string getSourceLine(int lineNumber);
+  /*
+   * Method: setParsedStatement
+   * Usage: program.setParsedStatement(lineNumber, stmt);
+   * ----------------------------------------------------
+   * Adds the parsed representation of the statement to the statement
+   * at the specified line number.  If no such line exists, this
+   * method raises an error.  If a previous parsed representation
+   * exists, the memory for that statement is reclaimed.
+   */
 
-/*
- * Method: setParsedStatement
- * Usage: program.setParsedStatement(lineNumber, stmt);
- * ----------------------------------------------------
- * Adds the parsed representation of the statement to the statement
- * at the specified line number.  If no such line exists, this
- * method raises an error.  If a previous parsed representation
- * exists, the memory for that statement is reclaimed.
- */
+  void setParsedStatement(int lineNumber, Statement *stmt);
 
-    void setParsedStatement(int lineNumber, Statement *stmt);
+  /*
+   * Method: getParsedStatement
+   * Usage: Statement *stmt = program.getParsedStatement(lineNumber);
+   * ----------------------------------------------------------------
+   * Retrieves the parsed representation of the statement at the
+   * specified line number.  If no value has been set, this method
+   * returns NULL.
+   */
 
-/*
- * Method: getParsedStatement
- * Usage: Statement *stmt = program.getParsedStatement(lineNumber);
- * ----------------------------------------------------------------
- * Retrieves the parsed representation of the statement at the
- * specified line number.  If no value has been set, this method
- * returns NULL.
- */
+  Statement *getParsedStatement(int lineNumber);
 
-    Statement *getParsedStatement(int lineNumber);
+  /*
+   * Method: getFirstLineNumber
+   * Usage: int lineNumber = program.getFirstLineNumber();
+   * -----------------------------------------------------
+   * Returns the line number of the first line in the program.
+   * If the program has no lines, this method returns -1.
+   */
 
-/*
- * Method: getFirstLineNumber
- * Usage: int lineNumber = program.getFirstLineNumber();
- * -----------------------------------------------------
- * Returns the line number of the first line in the program.
- * If the program has no lines, this method returns -1.
- */
+  int getFirstLineNumber();
 
-    int getFirstLineNumber();
+  /*
+   * Method: getNextLineNumber
+   * Usage: int nextLine = program.getNextLineNumber(lineNumber);
+   * ------------------------------------------------------------
+   * Returns the line number of the first line in the program whose
+   * number is larger than the specified one, which must already exist
+   * in the program.  If no more lines remain, this method returns -1.
+   */
 
-/*
- * Method: getNextLineNumber
- * Usage: int nextLine = program.getNextLineNumber(lineNumber);
- * ------------------------------------------------------------
- * Returns the line number of the first line in the program whose
- * number is larger than the specified one, which must already exist
- * in the program.  If no more lines remain, this method returns -1.
- */
+  int getNextLineNumber(int lineNumber);
 
-    int getNextLineNumber(int lineNumber);
-
-    //more func to add
-    //todo
-
-private:
-
-    // Fill this in with whatever types and instance variables you need
-    //todo
+public:
+  std::set<int> line_nums;
+  std::unordered_map<int, std::string> line_texts;
+  std::unordered_map<int, Statement *> line_parses;
+  bool is_ended = false;
+  int branch = -1;
+  // Fill this in with whatever types and instance variables you need
+  // todo
 };
 
 #endif
